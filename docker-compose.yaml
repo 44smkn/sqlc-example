@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+    db:
+        image: mysql:8
+        container_name: db
+        volumes:
+            - ./_sql/schema:/docker-entrypoint-initdb.d:rw
+        networks:
+            - sqlc-sample
+    toy-isuumo:
+        build: .
+        container_name: toy-isuumo
+        networks:
+            - sqlc-sample
+networks:
+    sqlc-sample:
+        name: sqlc-sample

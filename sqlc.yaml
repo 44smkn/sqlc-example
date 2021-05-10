@@ -1,0 +1,8 @@
+version: "1"
+packages:
+  - name: "mysql"
+    path: "pkg/infrastructure/persistence/mysql"
+    queries: "_sql/query"
+    schema: "_sql/schema"
+    engine: "mysql"
+    emit_prepared_queries: false
