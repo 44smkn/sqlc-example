@@ -25,7 +25,7 @@ type DBConfig struct {
 	User string `envconfig:"DB_USER" default:"44smkn"`
 
 	// Password is
-	Password string `envconfig:"DB_PASSWORD" default:"repoleved"`
+	Password string `envconfig:"DB_PASSWORD" default:"nkms44"`
 }
 
 func (cfg *DBConfig) GetDB() (*sql.DB, error) {
