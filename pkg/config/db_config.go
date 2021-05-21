@@ -3,8 +3,10 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"go.uber.org/zap"
 )
 
 const (
@@ -28,12 +30,22 @@ type DBConfig struct {
 	Password string `envconfig:"DB_PASSWORD" default:"nkms44"`
 }
 
-func (cfg *DBConfig) GetDB() (*sql.DB, error) {
+func (cfg *DBConfig) GetDB(logger *zap.Logger) (*sql.DB, error) {
 	connStrTemplate := "%v:%v@tcp(%v:%v)/%v" // mysql
 	connStr := fmt.Sprintf(connStrTemplate, cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.DBName)
 	db, err := sql.Open(dbDriver, connStr)
 	if err != nil {
 		return nil, err
+	}
+
+	for {
+		err = db.Ping()
+		if err == nil {
+			logger.Info("DB connection is OK", zap.String("dbhost", cfg.Host))
+			break
+		}
+		time.Sleep(3 * time.Second)
+		continue
 	}
 	return db, nil
 }
