@@ -47,5 +47,11 @@ func (cfg *DBConfig) GetDB(logger *zap.Logger) (*sql.DB, error) {
 		time.Sleep(3 * time.Second)
 		continue
 	}
+
+	// Parameter Set
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(5)
+
 	return db, nil
 }
