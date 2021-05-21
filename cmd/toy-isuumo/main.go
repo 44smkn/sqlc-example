@@ -38,7 +38,7 @@ func run() int {
 		return ExitCodeCreateLoggerError
 	}
 
-	conn, err := cfg.DBConfig.GetDB()
+	conn, err := cfg.DBConfig.GetDB(logger)
 	if err != nil {
 		logger.Error("Failed to connect DB", zap.Error(err))
 		return ExitDBConnectError
