@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/44smkn/sqlc-sample/pkg/presentation"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"go.uber.org/zap"
 )
 
@@ -28,7 +30,7 @@ func (s *Server) Run() error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
-	router := presentation.NewRouter()
+	router := newRouter()
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%v", s.Port),
 		Handler: router,
@@ -41,4 +43,17 @@ func (s *Server) Run() error {
 	}()
 
 	return server.ListenAndServe()
+}
+
+func newRouter() http.Handler {
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Timeout(30 * time.Second))
+
+	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(http.StatusText(http.StatusOK)))
+	})
+	r.Mount("/api", presentation.ApiRouter())
+
+	return r
 }
