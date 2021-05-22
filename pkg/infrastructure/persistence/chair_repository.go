@@ -53,3 +53,7 @@ func (c *ChairRepository) Create(ctx context.Context, entity *domain.Chair) erro
 	}
 	return nil
 }
+
+/*func (c *ChairRepository) ListWithCondtion(ctx context.Context, cond *domain.ChairSearchCondition) {
+	param := mysql.CreateChairParams{}
+}*/

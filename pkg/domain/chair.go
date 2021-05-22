@@ -13,15 +13,15 @@ type Chair struct {
 	Name        ChairName
 	Description string
 	Thumbnail   ChairThumbnail
-	Price       int
-	Height      int
-	Width       int
-	Depth       int
+	Price       int32
+	Height      int32
+	Width       int32
+	Depth       int32
 	Color       string
 	Features    []string
 	Kind        string
-	Popularity  int
-	Stock       int
+	Popularity  int32
+	Stock       int32
 }
 
 func NewChairFromRecord(record mysql.Chair) *Chair {
@@ -34,14 +34,14 @@ func NewChairFromRecord(record mysql.Chair) *Chair {
 		Name:        name,
 		Description: record.Description,
 		Thumbnail:   thumbnail,
-		Height:      int(record.Height.Int32),
-		Width:       int(record.Width.Int32),
-		Depth:       int(record.Depth.Int32),
+		Height:      record.Height.Int32,
+		Width:       record.Width.Int32,
+		Depth:       record.Depth.Int32,
 		Color:       record.Color.String,
 		Features:    []string{record.Features.String},
 		Kind:        record.Kind.String,
-		Popularity:  int(record.Popularity),
-		Stock:       int(record.Stock),
+		Popularity:  record.Popularity,
+		Stock:       record.Stock,
 	}
 }
 

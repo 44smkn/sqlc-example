@@ -48,14 +48,14 @@ func PostChair(ctx context.Context, param param.PostChairParam) error {
 		Name:        *name,
 		Description: param.Description,
 		Thumbnail:   *thumbnail,
-		Height:      int(param.Height),
-		Width:       int(param.Width),
-		Depth:       int(param.Depth),
+		Height:      param.Height,
+		Width:       param.Width,
+		Depth:       param.Depth,
 		Color:       param.Color,
 		Features:    param.Features,
 		Kind:        param.Kind,
-		Popularity:  int(param.Popularity),
-		Stock:       int(param.Stock),
+		Popularity:  param.Popularity,
+		Stock:       param.Stock,
 	}
 	err = chairRepository.Create(ctx, entity)
 	if err != nil {
