@@ -5,23 +5,8 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 )
-
-const countChairWithPriceCondition = `-- name: CountChairWithPriceCondition :one
-SELECT COUNT(*) FROM chair WHERE price >= ? AND price < ?
-`
-
-type CountChairWithPriceConditionParams struct {
-	Price   int32
-	Price_2 int32
-}
-
-func (q *Queries) CountChairWithPriceCondition(ctx context.Context, arg CountChairWithPriceConditionParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countChairWithPriceCondition, arg.Price, arg.Price_2)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
-}
 
 const createChair = `-- name: CreateChair :exec
 INSERT INTO chair(id, name, description, thumbnail, price, height, width, depth, color, features, kind, popularity, stock) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
@@ -32,13 +17,13 @@ type CreateChairParams struct {
 	Name        string
 	Description string
 	Thumbnail   string
-	Price       int32
-	Height      int32
-	Width       int32
-	Depth       int32
-	Color       string
-	Features    string
-	Kind        string
+	Price       sql.NullInt32
+	Height      sql.NullInt32
+	Width       sql.NullInt32
+	Depth       sql.NullInt32
+	Color       sql.NullString
+	Features    sql.NullString
+	Kind        sql.NullString
 	Popularity  int32
 	Stock       int32
 }
@@ -112,17 +97,51 @@ func (q *Queries) GetExistChair(ctx context.Context, id int64) (Chair, error) {
 	return i, err
 }
 
-const listChairWithPriceCondtion = `-- name: ListChairWithPriceCondtion :many
-SELECT id, name, description, thumbnail, price, height, width, depth, color, features, kind, popularity, stock FROM chair WHERE price >= ? AND price < ? AND stock > 0 ORDER BY popularity DESC, id ASC
+const listChairWithCondtion = `-- name: ListChairWithCondtion :many
+SELECT id, name, description, thumbnail, price, height, width, depth, color, features, kind, popularity, stock FROM chair
+WHERE 
+    (price > ? OR sqlc.arg(min_price) IS NULL)
+AND (price <= ? OR sqlc.arg(max_price) IS NULL)
+AND (height > ? OR sqlc.arg(min_height) IS NULL)
+AND (height <= ? OR sqlc.arg(max_height) IS NULL)
+AND (width > ? OR sqlc.arg(min_width) IS NULL)
+AND (width <= ? OR sqlc.arg(max_width) IS NULL)
+AND (width > ? OR sqlc.arg(min_depth) IS NULL)
+AND (width <= ? OR sqlc.arg(max_depth) IS NULL)
+AND (kind = ? OR sqlc.arg(kind) IS NULL)
+AND (color = ? OR sqlc.arg(color) IS NULL)
+AND (features = ? OR sqlc.arg(features) IS NULL)
+ORDER BY popularity DESC, id ASC
 `
 
-type ListChairWithPriceCondtionParams struct {
-	Price   int32
-	Price_2 int32
+type ListChairWithCondtionParams struct {
+	MinPrice  sql.NullInt32
+	MaxPrice  sql.NullInt32
+	MinHeight sql.NullInt32
+	MaxHeight sql.NullInt32
+	MinWidth  sql.NullInt32
+	MaxWidth  sql.NullInt32
+	MinDepth  sql.NullInt32
+	MaxDepth  sql.NullInt32
+	Kind      sql.NullString
+	Color     sql.NullString
+	Features  sql.NullString
 }
 
-func (q *Queries) ListChairWithPriceCondtion(ctx context.Context, arg ListChairWithPriceCondtionParams) ([]Chair, error) {
-	rows, err := q.db.QueryContext(ctx, listChairWithPriceCondtion, arg.Price, arg.Price_2)
+func (q *Queries) ListChairWithCondtion(ctx context.Context, arg ListChairWithCondtionParams) ([]Chair, error) {
+	rows, err := q.db.QueryContext(ctx, listChairWithCondtion,
+		arg.MinPrice,
+		arg.MaxPrice,
+		arg.MinHeight,
+		arg.MaxHeight,
+		arg.MinWidth,
+		arg.MaxWidth,
+		arg.MinDepth,
+		arg.MaxDepth,
+		arg.Kind,
+		arg.Color,
+		arg.Features,
+	)
 	if err != nil {
 		return nil, err
 	}

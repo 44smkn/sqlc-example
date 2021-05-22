@@ -2,20 +2,22 @@
 
 package mysql
 
-import ()
+import (
+	"database/sql"
+)
 
 type Chair struct {
 	ID          int64
 	Name        string
 	Description string
 	Thumbnail   string
-	Price       int32
-	Height      int32
-	Width       int32
-	Depth       int32
-	Color       string
-	Features    string
-	Kind        string
+	Price       sql.NullInt32
+	Height      sql.NullInt32
+	Width       sql.NullInt32
+	Depth       sql.NullInt32
+	Color       sql.NullString
+	Features    sql.NullString
+	Kind        sql.NullString
 	Popularity  int32
 	Stock       int32
 }
