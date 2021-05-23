@@ -57,14 +57,22 @@ func (c *ChairRepository) Create(ctx context.Context, entity *domain.Chair) erro
 
 func (c *ChairRepository) ListWithCondtion(ctx context.Context, cond *domain.ChairSearchCondition) ([]domain.Chair, error) {
 	param := mysql.ListChairWithCondtionParams{
-		MaxPrice:  convertInt32(cond.MaxPrice),
-		MinPrice:  convertInt32(cond.MinPrice),
-		MaxWidth:  convertInt32(cond.MaxWidth),
-		MinWidth:  convertInt32(cond.MinWidth),
-		MaxHeight: convertInt32(cond.MaxHeight),
-		MinHeight: convertInt32(cond.MinHeight),
-		MaxDepth:  convertInt32(cond.MaxDepth),
-		MinDepth:  convertInt32(cond.MinDepth),
+		MaxPrice1:  convertInt32(cond.MaxPrice),
+		MaxPrice2:  convertInt32(cond.MaxPrice),
+		MinPrice1:  convertInt32(cond.MinPrice),
+		MinPrice2:  convertInt32(cond.MinPrice),
+		MaxWidth1:  convertInt32(cond.MaxWidth),
+		MaxWidth2:  convertInt32(cond.MaxWidth),
+		MinWidth1:  convertInt32(cond.MinWidth),
+		MinWidth2:  convertInt32(cond.MinWidth),
+		MaxHeight1: convertInt32(cond.MaxHeight),
+		MaxHeight2: convertInt32(cond.MaxHeight),
+		MinHeight1: convertInt32(cond.MinHeight),
+		MinHeight2: convertInt32(cond.MinHeight),
+		MaxDepth1:  convertInt32(cond.MaxDepth),
+		MaxDepth2:  convertInt32(cond.MaxDepth),
+		MinDepth1:  convertInt32(cond.MinDepth),
+		MinDepth2:  convertInt32(cond.MinDepth),
 	}
 	rows, err := c.queries.ListChairWithCondtion(ctx, param)
 	if err != nil {

@@ -100,47 +100,69 @@ func (q *Queries) GetExistChair(ctx context.Context, id int64) (Chair, error) {
 const listChairWithCondtion = `-- name: ListChairWithCondtion :many
 SELECT id, name, description, thumbnail, price, height, width, depth, color, features, kind, popularity, stock FROM chair
 WHERE 
-    (price > ? OR sqlc.arg(min_price) IS NULL)
-AND (price <= ? OR sqlc.arg(max_price) IS NULL)
-AND (height > ? OR sqlc.arg(min_height) IS NULL)
-AND (height <= ? OR sqlc.arg(max_height) IS NULL)
-AND (width > ? OR sqlc.arg(min_width) IS NULL)
-AND (width <= ? OR sqlc.arg(max_width) IS NULL)
-AND (width > ? OR sqlc.arg(min_depth) IS NULL)
-AND (width <= ? OR sqlc.arg(max_depth) IS NULL)
-AND (kind = ? OR sqlc.arg(kind) IS NULL)
-AND (color = ? OR sqlc.arg(color) IS NULL)
-AND (features = ? OR sqlc.arg(features) IS NULL)
+    (price > ? OR ISNULL(?))
+AND (price <= ? OR ISNULL(?))
+AND (height > ? OR ISNULL(?))
+AND (height <= ? OR ISNULL(?))
+AND (width > ? OR ISNULL(?))
+AND (width <= ? OR ISNULL(?))
+AND (width > ? OR ISNULL(?))
+AND (width <= ? OR ISNULL(?))
+AND (kind = ? OR ISNULL(?))
+AND (color = ? OR ISNULL(?))
+AND (features = ? OR ISNULL(?))
 ORDER BY popularity DESC, id ASC
 `
 
 type ListChairWithCondtionParams struct {
-	MinPrice  sql.NullInt32
-	MaxPrice  sql.NullInt32
-	MinHeight sql.NullInt32
-	MaxHeight sql.NullInt32
-	MinWidth  sql.NullInt32
-	MaxWidth  sql.NullInt32
-	MinDepth  sql.NullInt32
-	MaxDepth  sql.NullInt32
-	Kind      sql.NullString
-	Color     sql.NullString
-	Features  sql.NullString
+	MinPrice1  sql.NullInt32
+	MinPrice2  interface{}
+	MaxPrice1  sql.NullInt32
+	MaxPrice2  interface{}
+	MinHeight1 sql.NullInt32
+	MinHeight2 interface{}
+	MaxHeight1 sql.NullInt32
+	MaxHeight2 interface{}
+	MinWidth1  sql.NullInt32
+	MinWidth2  interface{}
+	MaxWidth1  sql.NullInt32
+	MaxWidth2  interface{}
+	MinDepth1  sql.NullInt32
+	MinDepth2  interface{}
+	MaxDepth1  sql.NullInt32
+	MaxDepth2  interface{}
+	Kind1      sql.NullString
+	Kind2      interface{}
+	Color1     sql.NullString
+	Color2     interface{}
+	Features1  sql.NullString
+	Features2  interface{}
 }
 
 func (q *Queries) ListChairWithCondtion(ctx context.Context, arg ListChairWithCondtionParams) ([]Chair, error) {
 	rows, err := q.db.QueryContext(ctx, listChairWithCondtion,
-		arg.MinPrice,
-		arg.MaxPrice,
-		arg.MinHeight,
-		arg.MaxHeight,
-		arg.MinWidth,
-		arg.MaxWidth,
-		arg.MinDepth,
-		arg.MaxDepth,
-		arg.Kind,
-		arg.Color,
-		arg.Features,
+		arg.MinPrice1,
+		arg.MinPrice2,
+		arg.MaxPrice1,
+		arg.MaxPrice2,
+		arg.MinHeight1,
+		arg.MinHeight2,
+		arg.MaxHeight1,
+		arg.MaxHeight2,
+		arg.MinWidth1,
+		arg.MinWidth2,
+		arg.MaxWidth1,
+		arg.MaxWidth2,
+		arg.MinDepth1,
+		arg.MinDepth2,
+		arg.MaxDepth1,
+		arg.MaxDepth2,
+		arg.Kind1,
+		arg.Kind2,
+		arg.Color1,
+		arg.Color2,
+		arg.Features1,
+		arg.Features2,
 	)
 	if err != nil {
 		return nil, err
