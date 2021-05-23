@@ -30,6 +30,7 @@ func (s *Server) Run() error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
+	presentation.InitLogger(s.Logger)
 	router := newRouter()
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%v", s.Port),

@@ -4,7 +4,10 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"go.uber.org/zap"
 )
+
+var log *zap.Logger
 
 func ApiRouter() http.Handler {
 	r := chi.NewRouter()
@@ -15,4 +18,8 @@ func ApiRouter() http.Handler {
 	})
 
 	return r
+}
+
+func InitLogger(logger *zap.Logger) {
+	log = logger
 }
