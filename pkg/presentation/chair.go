@@ -3,6 +3,7 @@ package presentation
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
 
 	"github.com/44smkn/sqlc-sample/pkg/presentation/param"
 	"github.com/44smkn/sqlc-sample/pkg/usecase"
@@ -20,6 +21,7 @@ func getChairDetail(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Add("Content-Type", "application/json")
 	w.Write(b)
 }
 
@@ -38,15 +40,17 @@ func postChair(w http.ResponseWriter, r *http.Request) {
 }
 
 func searchChair(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
 	p := param.SearchChairParam{
-		PriceRangeID:  chi.URLParam(r, "price-range-id"),
-		HeightRangeID: chi.URLParam(r, "height-range-id"),
-		WidthRangeID:  chi.URLParam(r, "width-range-id"),
-		DepthRangeID:  chi.URLParam(r, "depth-range-id"),
-		Kind:          chi.URLParam(r, "kind"),
-		Color:         chi.URLParam(r, "features"),
-		Features:      chi.URLParam(r, "features"),
+		PriceRangeID:  queryVal(q, "price-range-id"),
+		HeightRangeID: queryVal(q, "height-range-id"),
+		WidthRangeID:  queryVal(q, "width-range-id"),
+		DepthRangeID:  queryVal(q, "depth-range-id"),
+		Kind:          queryVal(q, "kind"),
+		Color:         queryVal(q, "color"),
+		Features:      queryVal(q, "features"),
 	}
+	log.Sugar().Infof("param: %+v", p)
 	data, err := usecase.SearchChair(r.Context(), p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -56,5 +60,14 @@ func searchChair(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Add("Content-Type", "application/json")
 	w.Write(b)
+}
+
+func queryVal(q url.Values, key string) string {
+	if v, ok := q[key]; ok {
+		return v[0]
+	} else {
+		return ""
+	}
 }
