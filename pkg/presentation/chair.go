@@ -17,7 +17,7 @@ func getChairDetail(w http.ResponseWriter, r *http.Request) {
 	}
 	b, err := json.Marshal(detail)
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Write(b)
@@ -47,8 +47,14 @@ func searchChair(w http.ResponseWriter, r *http.Request) {
 		Color:         chi.URLParam(r, "features"),
 		Features:      chi.URLParam(r, "features"),
 	}
-	_, err := usecase.SearchChair(r.Context(), p)
+	data, err := usecase.SearchChair(r.Context(), p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+	b, err := json.Marshal(data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(b)
 }
