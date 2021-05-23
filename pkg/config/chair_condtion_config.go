@@ -1,8 +1,11 @@
 package config
 
-import "encoding/json"
+import (
+	_ "embed"
+	"encoding/json"
+)
 
-//go:embed embed/chair_condtion.json
+//go:embed embed/chair_condition.json
 var rawChairConditionJSON []byte
 
 type ChairSearchCondition struct {
