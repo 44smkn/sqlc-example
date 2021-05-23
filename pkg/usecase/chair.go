@@ -64,3 +64,38 @@ func PostChair(ctx context.Context, param param.PostChairParam) error {
 
 	return nil
 }
+
+func SearchChair(ctx context.Context, param param.SearchChairParam) (dto.ChairSearchDto, error) {
+	condition := domain.ChairSearchCondition{
+		MaxPrice:  param.MaxPrice,
+		MinPrice:  param.MinPrice,
+		MaxWidth:  param.MaxWidth,
+		MinWidth:  param.MinWidth,
+		MaxDepth:  param.MaxDepth,
+		MinDepth:  param.MinDepth,
+		MaxHeight: param.MaxHeight,
+		MinHeight: param.MinHeight,
+	}
+	chairs, err := chairRepository.ListWithCondtion(ctx, &condition)
+	if err != nil {
+		return nil, xerrors.Errorf("%w", err)
+	}
+	searchDto := make(dto.ChairSearchDto, 0, len(chairs))
+	for _, c := range chairs {
+		e := dto.ChairSearchItemDto{
+			Name:        c.Name.Value(),
+			Description: c.Description,
+			Thumbnail:   c.Thumbnail.Value(),
+			Height:      c.Height,
+			Width:       c.Width,
+			Depth:       c.Depth,
+			Color:       c.Color,
+			Features:    c.Features,
+			Kind:        c.Kind,
+			Popularity:  c.Popularity,
+			Stock:       c.Stock,
+		}
+		searchDto = append(searchDto, e)
+	}
+	return searchDto, nil
+}
