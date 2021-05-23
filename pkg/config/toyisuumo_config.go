@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/kelseyhightower/envconfig"
-	"github.com/pkg/errors"
+	"golang.org/x/xerrors"
 )
 
 type ToyIsuumoConfig struct {
@@ -14,13 +14,21 @@ type ToyIsuumoConfig struct {
 
 	// DBConfig is
 	DBConfig DBConfig
+
+	// ChairSearchCondition is
+	ChairSearchCondition ChairSearchCondition
 }
 
 func ReadFromEnv() (*ToyIsuumoConfig, error) {
 	var cfg ToyIsuumoConfig
 	if err := envconfig.Process("", &cfg); err != nil {
-		return nil, errors.Wrap(err, "envconfig failed to read environment variables")
+		return nil, xerrors.Errorf("envconfig failed to read environment variables: %w", err)
 	}
+	cond, err := getChairSearchCondition()
+	if err != nil {
+		return nil, xerrors.Errorf("failed to retrive chair search condition: %w", err)
+	}
+	cfg.ChairSearchCondition = *cond
 
 	return &cfg, nil
 }

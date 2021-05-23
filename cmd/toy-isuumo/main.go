@@ -44,6 +44,7 @@ func run() int {
 		return ExitDBConnectError
 	}
 	usecase.InitializeRepository(conn, logger)
+	usecase.IniticalizeSearchCondition(cfg.ChairSearchCondition)
 
 	srv := NewServer(cfg.Port, logger)
 	err = srv.Run()
