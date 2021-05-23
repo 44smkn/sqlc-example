@@ -38,5 +38,17 @@ func postChair(w http.ResponseWriter, r *http.Request) {
 }
 
 func searchChair(w http.ResponseWriter, r *http.Request) {
-
+	p := param.SearchChairParam{
+		PriceRangeID:  chi.URLParam(r, "price-range-id"),
+		HeightRangeID: chi.URLParam(r, "height-range-id"),
+		WidthRangeID:  chi.URLParam(r, "width-range-id"),
+		DepthRangeID:  chi.URLParam(r, "depth-range-id"),
+		Kind:          chi.URLParam(r, "kind"),
+		Color:         chi.URLParam(r, "features"),
+		Features:      chi.URLParam(r, "features"),
+	}
+	_, err := usecase.SearchChair(r.Context(), p)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }

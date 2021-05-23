@@ -2,7 +2,9 @@ package usecase
 
 import (
 	"context"
+	"strconv"
 
+	"github.com/44smkn/sqlc-sample/pkg/config"
 	"github.com/44smkn/sqlc-sample/pkg/domain"
 	"github.com/44smkn/sqlc-sample/pkg/presentation/param"
 	"github.com/44smkn/sqlc-sample/pkg/usecase/dto"
@@ -66,17 +68,11 @@ func PostChair(ctx context.Context, param param.PostChairParam) error {
 }
 
 func SearchChair(ctx context.Context, param param.SearchChairParam) (dto.ChairSearchDto, error) {
-	condition := domain.ChairSearchCondition{
-		MaxPrice:  param.MaxPrice,
-		MinPrice:  param.MinPrice,
-		MaxWidth:  param.MaxWidth,
-		MinWidth:  param.MinWidth,
-		MaxDepth:  param.MaxDepth,
-		MinDepth:  param.MinDepth,
-		MaxHeight: param.MaxHeight,
-		MinHeight: param.MinHeight,
+	condition, err := generateSeacrhCondtion(param)
+	if err != nil {
+		return nil, err
 	}
-	chairs, err := chairRepository.ListWithCondtion(ctx, &condition)
+	chairs, err := chairRepository.ListWithCondtion(ctx, condition)
 	if err != nil {
 		return nil, xerrors.Errorf("%w", err)
 	}
@@ -98,4 +94,58 @@ func SearchChair(ctx context.Context, param param.SearchChairParam) (dto.ChairSe
 		searchDto = append(searchDto, e)
 	}
 	return searchDto, nil
+}
+
+func generateSeacrhCondtion(param param.SearchChairParam) (*domain.ChairSearchCondition, error) {
+	maxPrice, minPrice, err := getRange(param.PriceRangeID, chairSearchCondition.Price)
+	if err != nil {
+		return nil, xerrors.Errorf("getting price range is failed: %w", err)
+	}
+	maxWidth, minWidth, err := getRange(param.WidthRangeID, chairSearchCondition.Width)
+	if err != nil {
+		return nil, xerrors.Errorf("getting width range is failed: %w", err)
+	}
+	maxDepth, minDepth, err := getRange(param.DepthRangeID, chairSearchCondition.Depth)
+	if err != nil {
+		return nil, xerrors.Errorf("getting depth range is failed: %w", err)
+	}
+	maxHeight, minHeight, err := getRange(param.HeightRangeID, chairSearchCondition.Height)
+	if err != nil {
+		return nil, xerrors.Errorf("getting depth range is failed: %w", err)
+	}
+	condition := domain.ChairSearchCondition{
+		MaxPrice:  maxPrice,
+		MinPrice:  minPrice,
+		MaxWidth:  maxWidth,
+		MinWidth:  minWidth,
+		MaxDepth:  maxDepth,
+		MinDepth:  minDepth,
+		MaxHeight: maxHeight,
+		MinHeight: minHeight,
+	}
+	return &condition, nil
+}
+
+func getRange(id string, cond config.RangeCondition) (max, min *int32, err error) {
+	if id == "" {
+		return
+	}
+	rangeIdx, err := strconv.Atoi(id)
+	if err != nil {
+		return
+	}
+
+	if rangeIdx < 0 || len(cond.Ranges) <= rangeIdx {
+		err = xerrors.New("Unexpected Range ID")
+		return
+	}
+
+	r := cond.Ranges[rangeIdx]
+	if r.Min != -1 {
+		min = &r.Min
+	}
+	if r.Max != -1 {
+		max = &r.Max
+	}
+	return
 }

@@ -22,9 +22,9 @@ type RangeCondition struct {
 }
 
 type Range struct {
-	ID  int64 `json:"id"`
-	Min int64 `json:"min"`
-	Max int64 `json:"max"`
+	ID  int32 `json:"id"`
+	Min int32 `json:"min"`
+	Max int32 `json:"max"`
 }
 
 type ListCondition struct {

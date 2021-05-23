@@ -15,15 +15,11 @@ type PostChairParam struct {
 }
 
 type SearchChairParam struct {
-	MaxPrice  *int32   `json:"max_price"`
-	MinPrice  *int32   `json:"min_price"`
-	MaxHeight *int32   `json:"max_height"`
-	MinHeight *int32   `json:"min_height"`
-	MaxWidth  *int32   `json:"max_width"`
-	MinWidth  *int32   `json:"min_width"`
-	MaxDepth  *int32   `json:"max_depth"`
-	MinDepth  *int32   `json:"min_depth"`
-	Kind      *string  `json:"kind"`
-	Color     *string  `json:"color"`
-	Features  []string `json:"feature"`
+	PriceRangeID  string
+	HeightRangeID string
+	WidthRangeID  string
+	DepthRangeID  string
+	Kind          string
+	Color         string
+	Features      string
 }
